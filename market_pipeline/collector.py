@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 
 # Loading config from .env
 load_dotenv()
-API_KEY = os.get_env('EXCHANGE_API_KEY')
-DB_PATH = os.get_env('DB_PATH')
+API_KEY = os.getenv('EXCHANGE_API_KEY')
+DB_PATH = os.getenv('DB_PATH')
 
 def get_rates():
     #Fetching base USD rates
@@ -18,7 +18,7 @@ def get_rates():
         if data['result'] == 'success':
             r = data['conversion_rates']
             # Picking Only Four - EUR, JPY, GBP, ZAR
-            return {'EUR': r['EUR'], 'JPY': r['JPY'], 'GBP': r['GBP'], 'ZAR': ['ZAR']}
+            return {'EUR': r['EUR'], 'JPY': r['JPY'], 'GBP': r['GBP'], 'ZAR': r['ZAR']}
 
     except Exception as e:
         print(f"API Error: {e}")
@@ -33,11 +33,11 @@ def save_to_db(payload):
                 ''')
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         for symbol, price in payload.items():
-            cursor.execute('INSERT INTO market_history VALUES (?, ?, ?)', now, symbol, price))
-        conn.close()
+            cursor.execute('INSERT INTO market_history VALUES (?, ?, ?)', (now, symbol, price))
+        conn.commit()
 
 if __name__ == '__main__':
-    data = get_rates
-    if data:
-        save_to_db(data)
+    market_data = get_rates()
+    if market_data:
+        save_to_db(market_data)
 
