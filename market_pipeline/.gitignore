@@ -1,0 +1,7 @@
+.env
+data/
+outputs/
+venv/
+__pycache__/
+*.xlsx
+*.png
